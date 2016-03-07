@@ -29,13 +29,20 @@
 #ifndef DIME_ENGINE_HPP
 #define DIME_ENGINE_HPP
 
+#include "config.hpp"
 #include "allocator.hpp"
 #include "diagnostic.hpp"
 #include "patternmatching.hpp"
 
 #include <list>
+
+#ifdef DIME_USE_WEOS
+#include <weos/memory.hpp>
+#include <weos/mutex.hpp>
+#else
 #include <memory>
 #include <mutex>
+#endif // DIME_USE_WEOS
 
 
 namespace dime
@@ -46,20 +53,20 @@ class Engine : public Allocator
 {
     struct FilteredSubscriber
     {
-        FilteredSubscriber(std::unique_ptr<dime_detail::PatternMatcher> m,
+        FilteredSubscriber(DIME_STD::unique_ptr<dime_detail::PatternMatcher> m,
                            Subscriber* s)
-            : matcher(std::move(m)),
+            : matcher(DIME_STD::move(m)),
               subscriber(s)
         {
         }
 
         FilteredSubscriber(FilteredSubscriber&& other)
-            : matcher(std::move(other.matcher)),
+            : matcher(DIME_STD::move(other.matcher)),
               subscriber(other.subscriber)
         {
         }
 
-        std::unique_ptr<dime_detail::PatternMatcher> matcher;
+        DIME_STD::unique_ptr<dime_detail::PatternMatcher> matcher;
         Subscriber* subscriber;
     };
 
@@ -88,7 +95,7 @@ public:
     void setFallbackConsumer(Subscriber* consumer) noexcept;
 
 private:
-    std::mutex m_mutex;
+    DIME_STD::mutex m_mutex;
 
     Subscriber* m_fallbackConsumer = nullptr;
 
@@ -103,8 +110,8 @@ template <typename... TArguments>
 void Engine::publish(const Descriptor<void(TArguments...)>& spec,
                      TArguments&&... arguments)
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    auto diagnostic = Diagnostic::create(*this, spec, std::forward<TArguments>(arguments)...);
+    DIME_STD::lock_guard<DIME_STD::mutex> lock(m_mutex);
+    auto diagnostic = Diagnostic::create(*this, spec, DIME_STD::forward<TArguments>(arguments)...);
     dispatch(diagnostic);
 }
 

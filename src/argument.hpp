@@ -91,26 +91,38 @@ enum class ArgumentKind
 class Argument
 {
 public:
-    Argument(int i)
-        : m_integer(i),
+    Argument(int value)
+        : m_integer(value),
           m_kind(ArgumentKind::SignedInteger)
     {
     }
 
-    Argument(unsigned i)
-        : m_unsigned(i),
+    Argument(unsigned value)
+        : m_unsigned(value),
           m_kind(ArgumentKind::UnsignedInteger)
     {
     }
 
-    Argument(float f)
-        : m_float(f),
+    Argument(float value)
+        : m_float(value),
           m_kind(ArgumentKind::Float)
     {
     }
 
-    Argument(const char* s)
-        : m_string(s),
+    Argument(double value)
+        : m_double(value),
+          m_kind(ArgumentKind::Double)
+    {
+    }
+
+    Argument(long double value)
+        : m_longDouble(value),
+          m_kind(ArgumentKind::LongDouble)
+    {
+    }
+
+    Argument(const char* value)
+        : m_string(value),
           m_kind(ArgumentKind::String)
     {
     }
